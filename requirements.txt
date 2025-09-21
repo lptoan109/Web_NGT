@@ -13,3 +13,5 @@ tflite-runtime
 soundfile
 numpy
 noisereduce
+psycopg2-binary
+cloudinary

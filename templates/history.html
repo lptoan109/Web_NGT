@@ -23,7 +23,7 @@
                         <td data-label="Tên file">{{ recording.filename }}</td>
                         <td data-label="Ngày Ghi">{{ recording.timestamp.strftime('%d-%m-%Y') }}</td>
                         <td data-label="Phát lại">
-                            <audio controls src="{{ url_for('static', filename='uploads/' + recording.filename) }}"></audio>
+                            <audio controls src="{{ recording.audio_url }}"></audio> 
                         </td>
                         <td data-label="Hành động">
                             <form action="{{ url_for('delete_recording', recording_id=recording.id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bản ghi này không?');">

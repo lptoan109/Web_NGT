@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import config # Import file config.py
 
 from itsdangerous import URLSafeTimedSerializer
 from flask import Flask, url_for, session, redirect, render_template, request, flash
@@ -9,25 +8,38 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
 from authlib.integrations.flask_client import OAuth
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+import urllib.request
 from werkzeug.utils import secure_filename
 from ai_predictor import CoughPredictor
 # --- 1. KHỞI TẠO VÀ CẤU HÌNH ---
 app = Flask(__name__)
 
-# Cấu hình từ file config.py
-app.config['SECRET_KEY'] = config.SECRET_KEY
-app.config['MAIL_USERNAME'] = config.EMAIL_USER
-app.config['MAIL_PASSWORD'] = config.EMAIL_PASS
-
-# Cấu hình chung
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+# --- THAY ĐỔI LỚN: Cấu hình từ Biến Môi Trường ---
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') # Render sẽ tự cung cấp biến này
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
-# Cấu hình Mail
+# Đường dẫn lưu file sẽ trỏ đến Persistent Disk của Render
+# Render sẽ gắn Disk vào đường dẫn /var/data/uploads
+UPLOAD_PATH = '/var/data/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
+
+# Cấu hình Mail từ Biến Môi Trường
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+
+cloudinary.config(
+  cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'), 
+  api_key = os.environ.get('CLOUDINARY_API_KEY'), 
+  api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
+  secure = True
+)
 
 # Khởi tạo các extension
 db = SQLAlchemy(app)
@@ -41,8 +53,8 @@ oauth = OAuth(app)
 # !!! THAY THẾ BẰNG CLIENT ID VÀ SECRET ĐÚNG TỪ "Web client 1" !!!
 google = oauth.register(
     name='google',
-    client_id='564904327189-4gsii5kfkht070218tsjqu8amnstc7o1.apps.googleusercontent.com', # <-- GIÁ TRỊ ĐÚNG
-    client_secret='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', # <-- THAY BẰNG MÃ BÍ MẬT ĐÚNG CỦA BẠN
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={'scope': 'openid email profile'}
 )
@@ -62,8 +74,8 @@ class User(db.Model, UserMixin):
 
 class Prediction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(150), nullable=False)
-    # Thêm các cột để lưu kết quả
+    # Đổi filename thành audio_url
+    audio_url = db.Column(db.String(300), nullable=False)
     result = db.Column(db.String(100), nullable=False)
     confidence = db.Column(db.String(20), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -231,53 +243,48 @@ def edit_profile():
 
 @app.route('/upload_audio', methods=['POST'])
 def upload_audio():
-    """
-    Xử lý file âm thanh được tải lên, dự đoán và lưu kết quả.
-    Route này không yêu cầu đăng nhập.
-    """
     audio_file = request.files.get('audio_data')
     if not audio_file:
         return jsonify({"error": "Không có file âm thanh"}), 400
 
-    # --- Logic lưu file và dự đoán được đơn giản hóa ---
-    
-    # 1. Tạo một tên file duy nhất
-    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-    # Phân biệt file của user và guest
-    user_prefix = f"user_{current_user.id}" if current_user.is_authenticated else "guest"
-    filename = secure_filename(f"{user_prefix}_{timestamp_str}.wav")
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-    # 2. Lưu file MỘT LẦN DUY NHẤT
-    audio_file.save(filepath)
-    
     try:
-        # 3. Gọi model AI để xử lý file đã lưu
-        ai_result = ai_model.predict(filepath)
+        # 1. Tải file lên Cloudinary
+        # Cloudinary coi audio là một dạng "video"
+        upload_result = cloudinary.uploader.upload(
+            audio_file, 
+            resource_type = "video",
+            folder = "cough_audio" # Tạo một thư mục trên Cloudinary để dễ quản lý
+        )
+        # Lấy URL an toàn của file đã tải lên
+        audio_url = upload_result['secure_url']
 
-        # 4. Nếu người dùng đã đăng nhập, lưu kết quả vào lịch sử
-        if current_user.is_authenticated:
-            if 'error' not in ai_result:
-                new_prediction = Prediction(
-                    filename=filename,
-                    user_id=current_user.id,
-                    result=ai_result.get('predicted_class', 'N/A'),
-                    confidence=ai_result.get('confidence', '0%')
-                )
-                db.session.add(new_prediction)
-                db.session.commit()
-        else:
-            # Nếu là khách, chúng ta có thể xóa file tạm sau khi dự đoán để tiết kiệm dung lượng
-            os.remove(filepath) # Bỏ comment dòng này nếu bạn muốn xóa file của guest
-            pass
+        # 2. Tải file về tạm thời để AI xử lý
+        temp_filename = "temp_audio_for_ai.wav"
+        urllib.request.urlretrieve(audio_url, temp_filename)
 
-        # 5. Trả về kết quả chẩn đoán cho frontend
+        # 3. Gọi model AI để xử lý file tạm
+        ai_result = ai_model.predict(temp_filename)
+
+        # 4. Xóa file tạm sau khi xử lý xong
+        os.remove(temp_filename)
+
+        # 5. Lưu kết quả vào Database
+        if current_user.is_authenticated and 'error' not in ai_result:
+            new_prediction = Prediction(
+                user_id=current_user.id,
+                audio_url=audio_url, # <-- LƯU URL
+                result=ai_result.get('predicted_class', 'N/A'),
+                confidence=ai_result.get('confidence', '0%')
+            )
+            db.session.add(new_prediction)
+            db.session.commit()
+        
+        # 6. Trả kết quả về cho frontend
         return jsonify({"success": True, "diagnosis_result": ai_result})
 
     except Exception as e:
-        # Xử lý nếu có lỗi từ model AI
-        print(f"Lỗi khi dự đoán AI: {e}")
-        return jsonify({"error": "Lỗi máy chủ trong quá trình phân tích"}), 500
+        print(f"Lỗi khi tải lên hoặc dự đoán: {e}")
+        return jsonify({"error": "Lỗi máy chủ trong quá trình xử lý"}), 500
 
 
 # --- 4. CHẠY ỨNG DỤNG ---
