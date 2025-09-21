@@ -9,7 +9,7 @@ Werkzeug
 gunicorn
 Flask-Mail
 Flask-Babel
-tflite-runtime
+tensorflow
 soundfile
 numpy<2.0
 noisereduce
