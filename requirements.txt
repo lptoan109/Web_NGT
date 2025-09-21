@@ -11,7 +11,7 @@ Flask-Mail
 Flask-Babel
 tflite-runtime
 soundfile
-numpy
+numpy<2.0
 noisereduce
 psycopg2-binary
 cloudinary
