@@ -11,6 +11,7 @@ from authlib.integrations.flask_client import OAuth
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import cloudinary.utils
 import urllib.request
 from werkzeug.utils import secure_filename
 from ai_predictor import CoughPredictor
@@ -255,19 +256,30 @@ def upload_audio():
     try:
         # 1. Tải file gốc lên Cloudinary
         upload_result = cloudinary.uploader.upload(
-            audio_file, 
+            audio_file,
             resource_type="video",
             folder="cough_audio"
         )
         
-        # --- THAY ĐỔI LỚN: Xây dựng URL chuyển đổi đầy đủ ---
+        # --- THAY ĐỔI LỚN: Dùng hàm chính thức để tạo URL ---
         public_id = upload_result['public_id']
-        cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME')
 
-        # Tạo URL mới yêu cầu chuyển đổi cả định dạng, tần số VÀ sang mono
-        # ar_16000: audio_rate = 16000
-        # ac_mono: audio_channel = mono
-        transformed_url = f"https://res.cloudinary.com/{cloud_name}/video/upload/ar_16000,ac_mono/{public_id}.wav"
+        # Yêu cầu thư viện Cloudinary tạo URL chuyển đổi giúp chúng ta
+        # Điều này đảm bảo URL luôn đúng cú pháp.
+        transformed_url = cloudinary.utils.cloudinary_url(
+            public_id,
+            resource_type="video",
+            transformation=[
+                {'audio_codec': 'none'}, # Cần thiết cho việc đổi sample rate
+                {'audio_frequency': 16000},
+                {'audio_channels': 'mono'}
+            ]
+        )[0] # Lấy URL từ kết quả trả về
+
+        # Đảm bảo URL kết thúc bằng .wav
+        # Hàm trên có thể trả về url không có đuôi, ta thêm vào cho chắc
+        if not transformed_url.endswith('.wav'):
+             transformed_url = transformed_url.rsplit('.', 1)[0] + ".wav"
         # -----------------------------------------------------------
 
         # 2. Tải file đã được chuyển đổi hoàn toàn về server
