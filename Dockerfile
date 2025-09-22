@@ -1,23 +1,28 @@
-# Dockerfile (phiên bản cuối cùng, đơn giản và hiệu quả)
+# Dockerfile (phiên bản cuối cùng, đã bao gồm gói hệ thống cần thiết)
 
-# Bắt đầu từ hình ảnh Docker chính thức của TensorFlow
-FROM tensorflow/tensorflow:2.15.0
+# Bắt đầu từ một hình ảnh Docker Python 3.10 chính thức, sạch sẽ
+FROM python:3.10-slim
 
-# Tạo một môi trường ảo tại /opt/venv
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
-# Thêm thư mục bin của môi trường ảo vào PATH
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# Thiết lập các biến môi trường để Python không tạo file .pyc
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Thiết lập thư mục làm việc bên trong container
+# Tạo và chuyển đến thư mục làm việc
 WORKDIR /app
 
-# Sao chép file requirements.txt vào trước
+# --- THÊM VÀO: Cài đặt gói hệ thống cần thiết cho việc xử lý âm thanh ---
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libsndfile1 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# ---------------------------------------------------------------------
+
+# Nâng cấp pip
+RUN pip install --upgrade pip
+
+# Sao chép file requirements.txt
 COPY requirements.txt .
 
-# Nâng cấp pip và cài đặt thư viện vào môi trường ảo
-# Việc cài đặt tensorflow-text sẽ tự động giải quyết vấn đề libtensorflowlite_flex.so
-RUN pip install --upgrade pip
+# Cài đặt TẤT CẢ các thư viện Python từ requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Sao chép toàn bộ mã nguồn của bạn vào container
