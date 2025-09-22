@@ -34,7 +34,7 @@ class CoughPredictor:
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
-        self.labels = ['covid', 'asthma', 'healthy', 'tuberculosis']
+        self.labels = ["asthma", "covid", "healthy", "tuberculosis"]
 
     def _softmax(self, x):
         e_x = np.exp(x - np.max(x))
