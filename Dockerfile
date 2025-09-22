@@ -1,4 +1,4 @@
-# Dockerfile (phiên bản cuối cùng, có chỉ định đường dẫn thư viện)
+# Dockerfile (phiên bản cuối cùng, đã sửa lỗi tìm kiếm)
 
 # Bắt đầu từ hình ảnh Docker chính thức của TensorFlow
 FROM tensorflow/tensorflow:2.15.0
@@ -20,12 +20,11 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # --- THAY ĐỔI QUAN TRỌNG NHẤT ---
-# Tìm đường dẫn chính xác đến thư viện libtensorflowlite_flex.so
+# Tìm đường dẫn chính xác đến thư viện libtensorflowlite_flex.so trên TOÀN BỘ HỆ THỐNG
 # và thêm nó vào biến môi trường LD_LIBRARY_PATH để hệ thống có thể tìm thấy.
-RUN TFLITE_FLEX_PATH=$(find $VIRTUAL_ENV -name "libtensorflowlite_flex.so" | xargs dirname) && \
+RUN TFLITE_FLEX_PATH=$(find / -name "libtensorflowlite_flex.so" | head -n 1 | xargs dirname) && \
     echo "Found Flex Delegate at: $TFLITE_FLEX_PATH" && \
-    chmod +x /etc/profile.d/tflite_flex.sh && \
-    echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TFLITE_FLEX_PATH" > /etc/profile.d/tflite_flex.sh
+    echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TFLITE_FLEX_PATH" >> /etc/profile
 # --------------------------------
 
 # Sao chép toàn bộ mã nguồn của bạn vào container
