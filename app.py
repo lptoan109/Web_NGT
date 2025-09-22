@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from itsdangerous import URLSafeTimedSerializer
-from flask import Flask, url_for, session, redirect, render_template, request, flash
+from flask import Flask, url_for, session, redirect, render_template, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
