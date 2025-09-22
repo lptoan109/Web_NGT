@@ -253,21 +253,26 @@ def upload_audio():
         return jsonify({"error": "Không có file âm thanh"}), 400
 
     try:
-        # 1. Tải file lên Cloudinary
-        # Cloudinary coi audio là một dạng "video"
+        # 1. Tải file gốc lên Cloudinary
         upload_result = cloudinary.uploader.upload(
             audio_file, 
-            resource_type = "video",
-            folder = "cough_audio" # Tạo một thư mục trên Cloudinary để dễ quản lý
+            resource_type = "video", # Cloudinary coi audio là một loại video
+            folder = "cough_audio"
         )
-        # Lấy URL an toàn của file đã tải lên
-        audio_url = upload_result['secure_url']
+        # Lấy URL của file gốc (có thể là .webm)
+        original_audio_url = upload_result['secure_url']
 
-        # 2. Tải file về tạm thời để AI xử lý
+        # --- THAY ĐỔI QUAN TRỌNG: Yêu cầu Cloudinary chuyển đổi sang .wav ---
+        # Tách URL ra và thay đổi đuôi file thành .wav
+        url_parts = original_audio_url.rsplit('.', 1)
+        wav_audio_url = url_parts[0] + '.wav'
+        # -------------------------------------------------------------------
+
+        # 2. Tải file phiên bản .wav về tạm thời để AI xử lý
         temp_filename = "temp_audio_for_ai.wav"
-        urllib.request.urlretrieve(audio_url, temp_filename)
+        urllib.request.urlretrieve(wav_audio_url, temp_filename) # Dùng URL đã chuyển đổi
 
-        # 3. Gọi model AI để xử lý file tạm
+        # 3. Gọi model AI để xử lý file tạm (đã đúng định dạng .wav)
         ai_result = ai_model.predict(temp_filename)
 
         # 4. Xóa file tạm sau khi xử lý xong
@@ -277,7 +282,7 @@ def upload_audio():
         if current_user.is_authenticated and 'error' not in ai_result:
             new_prediction = Prediction(
                 user_id=current_user.id,
-                audio_url=audio_url, # <-- LƯU URL
+                audio_url=original_audio_url, # <-- Lưu URL gốc để nghe lại
                 result=ai_result.get('predicted_class', 'N/A'),
                 confidence=ai_result.get('confidence', '0%')
             )
@@ -290,7 +295,6 @@ def upload_audio():
     except Exception as e:
         print(f"Lỗi khi tải lên hoặc dự đoán: {e}")
         return jsonify({"error": "Lỗi máy chủ trong quá trình xử lý"}), 500
-
 
 # --- 4. CHẠY ỨNG DỤNG ---
 if __name__ == '__main__':
