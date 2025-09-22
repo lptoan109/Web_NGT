@@ -1,9 +1,9 @@
 import os
 import numpy as np
 import noisereduce as nr
-import audio_utils_light as audioimport 
-tensorflow as tf
+import tensorflow as tf
 from tensorflow.keras.applications.efficientnet import preprocess_input
+import audio_utils_light as audioimport
 
 # Các hằng số cho việc xử lý âm thanh
 SAMPLE_RATE = 16000
