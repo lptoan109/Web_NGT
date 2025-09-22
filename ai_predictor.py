@@ -19,13 +19,22 @@ TARGET_SHAPE = (240, 240)
 
 class CoughPredictor:
     def __init__(self, model_path):
-        # --- THAY ĐỔI: Tải mô hình bằng TFLite Interpreter ---
-        self.interpreter = tf.lite.Interpreter(model_path=model_path)
+        # --- THAY ĐỔI: Kích hoạt Flex Delegate ---
+        # Tải "bộ công cụ mở rộng" Flex delegate
+        try:
+            # Dành cho các phiên bản TensorFlow mới hơn
+            from tensorflow.lite.python.interpreter import OpResolverType
+            delegate = tf.lite.experimental.load_delegate('libtensorflowlite_flex.so')
+            self.interpreter = tf.lite.Interpreter(model_path=model_path, experimental_delegates=[delegate])
+        except (ImportError, ValueError):
+            # Cách làm cũ hơn cho các phiên bản TensorFlow trước đó
+             self.interpreter = tf.lite.Interpreter(model_path=model_path)
+
+        # -----------------------------------------------
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
-        # ----------------------------------------------------
-        self.labels = ["asthma", "covid", "healthy", "tuberculosis"]
+        self.labels = ['covid', 'asthma', 'healthy', 'tuberculosis']
 
     def _softmax(self, x):
         e_x = np.exp(x - np.max(x))
