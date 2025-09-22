@@ -249,6 +249,14 @@ def edit_profile():
 
 @app.route('/upload_audio', methods=['POST'])
 def upload_audio():
+    # --- THÊM GỠ LỖI ---
+    cloud_name_debug = os.environ.get('CLOUDINARY_CLOUD_NAME')
+    api_key_debug = os.environ.get('CLOUDINARY_API_KEY')
+    print(f"--- DEBUGGING START ---")
+    print(f"Cloud Name: {cloud_name_debug}")
+    print(f"API Key: {'Có' if api_key_debug else 'Không có'}")
+    # ---------------------
+
     audio_file = request.files.get('audio_data')
     if not audio_file:
         return jsonify({"error": "Không có file âm thanh"}), 400
@@ -261,38 +269,35 @@ def upload_audio():
             folder="cough_audio"
         )
         
-        # --- THAY ĐỔI LỚN: Dùng hàm chính thức để tạo URL ---
+        # 2. Dùng hàm chính thức của Cloudinary để tạo URL chuyển đổi
         public_id = upload_result['public_id']
-
-        # Yêu cầu thư viện Cloudinary tạo URL chuyển đổi giúp chúng ta
-        # Điều này đảm bảo URL luôn đúng cú pháp.
+        
         transformed_url = cloudinary.utils.cloudinary_url(
             public_id,
             resource_type="video",
             transformation=[
-                {'audio_codec': 'none'}, # Cần thiết cho việc đổi sample rate
                 {'audio_frequency': 16000},
-                {'audio_channels': 'mono'}
+                {'audio_channels': 'mono'},
+                {'fetch_format': 'wav'}
             ]
-        )[0] # Lấy URL từ kết quả trả về
+        )[0]
 
-        # Đảm bảo URL kết thúc bằng .wav
-        # Hàm trên có thể trả về url không có đuôi, ta thêm vào cho chắc
-        if not transformed_url.endswith('.wav'):
-             transformed_url = transformed_url.rsplit('.', 1)[0] + ".wav"
-        # -----------------------------------------------------------
+        # --- THÊM GỠ LỖI ---
+        print(f"Generated URL: {transformed_url}")
+        print(f"--- DEBUGGING END ---")
+        # ---------------------
 
-        # 2. Tải file đã được chuyển đổi hoàn toàn về server
+        # 3. Tải file đã được chuyển đổi về server
         temp_filename = "temp_audio_for_ai.wav"
         urllib.request.urlretrieve(transformed_url, temp_filename)
 
-        # 3. Gọi model AI
+        # 4. Gọi model AI
         ai_result = ai_model.predict(temp_filename)
 
-        # 4. Xóa file tạm
+        # 5. Xóa file tạm
         os.remove(temp_filename)
 
-        # 5. Lưu vào database
+        # 6. Lưu vào database
         if current_user.is_authenticated and 'error' not in ai_result:
             new_prediction = Prediction(
                 user_id=current_user.id,
@@ -303,12 +308,13 @@ def upload_audio():
             db.session.add(new_prediction)
             db.session.commit()
         
-        # 6. Trả kết quả về
+        # 7. Trả kết quả về
         return jsonify({"success": True, "diagnosis_result": ai_result})
 
     except Exception as e:
         print(f"Lỗi khi tải lên hoặc dự đoán: {e}")
         return jsonify({"error": "Lỗi máy chủ trong quá trình xử lý"}), 500
+
 
 # --- 4. CHẠY ỨNG DỤNG ---
 if __name__ == '__main__':
