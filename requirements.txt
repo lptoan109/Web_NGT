@@ -10,7 +10,7 @@ gunicorn
 Flask-Mail
 Flask-Babel
 tensorflow
-librosa
+soundfile
 numpy<2.0
 noisereduce
 psycopg2-binary

@@ -1,8 +1,8 @@
 import os
 import numpy as np
 import noisereduce as nr
-import librosa
-import tensorflow as tf
+import audio_utils_light as audioimport 
+tensorflow as tf
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
 # Các hằng số cho việc xử lý âm thanh
@@ -27,19 +27,18 @@ class CoughPredictor:
         return e_x / e_x.sum(axis=0)
 
     def _process_audio(self, file_path):
-        # Hàm này giữ nguyên, không thay đổi
         try:
-            y, sr = librosa.load(file_path, sr=SAMPLE_RATE, mono=True)
-            if len(y) / sr < MIN_DURATION_S:
-                return None
+            y, sr = sf.read(file_path, dtype='float32')
+            if sr != SAMPLE_RATE:
+                print(f"Cảnh báo: Tần số lấy mẫu không phải {SAMPLE_RATE}Hz.")
+            y = audio.to_mono(y)
+            if len(y) / sr < MIN_DURATION_S: return None
+            y = audio.normalize(y)
             y_denoised = nr.reduce_noise(y=y, sr=sr)
-            y_trimmed, _ = librosa.effects.trim(y_denoised, top_db=SILENCE_THRESHOLD_DB)
-            if len(y_trimmed) < N_FFT:
-                return None
-            mel_spec = librosa.feature.melspectrogram(
-                y=y_trimmed, sr=sr, n_fft=N_FFT, hop_length=HOP_LENGTH, n_mels=N_MELS
-            )
-            db_spec = librosa.power_to_db(mel_spec, ref=np.max)
+            y_trimmed = audio.trim(y_denoised, top_db=SILENCE_THRESHOLD_DB)
+            if len(y_trimmed) < N_FFT: return None
+            mel_spec = audio.melspectrogram(y=y_trimmed, sr=sr, n_fft=N_FFT, hop_length=HOP_LENGTH, n_mels=N_MELS)
+            db_spec = audio.power_to_db(mel_spec, top_db=80)
             spec_rgb = np.stack([db_spec, db_spec, db_spec], axis=-1)
             spec_expanded = np.expand_dims(spec_rgb, axis=0)
             preprocessed_spec = preprocess_input(spec_expanded)
