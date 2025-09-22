@@ -256,40 +256,42 @@ def upload_audio():
         # 1. Tải file gốc lên Cloudinary
         upload_result = cloudinary.uploader.upload(
             audio_file, 
-            resource_type = "video", # Cloudinary coi audio là một loại video
-            folder = "cough_audio"
+            resource_type="video",
+            folder="cough_audio"
         )
-        # Lấy URL của file gốc (có thể là .webm)
-        original_audio_url = upload_result['secure_url']
+        
+        # --- THAY ĐỔI LỚN: Xây dựng URL chuyển đổi đầy đủ ---
+        public_id = upload_result['public_id']
+        cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME')
 
-        # --- THAY ĐỔI QUAN TRỌNG: Yêu cầu Cloudinary chuyển đổi sang .wav ---
-        # Tách URL ra và thay đổi đuôi file thành .wav
-        url_parts = original_audio_url.rsplit('.', 1)
-        wav_audio_url = url_parts[0] + '.wav'
-        # -------------------------------------------------------------------
+        # Tạo URL mới yêu cầu chuyển đổi cả định dạng, tần số VÀ sang mono
+        # ar_16000: audio_rate = 16000
+        # ac_mono: audio_channel = mono
+        transformed_url = f"https://res.cloudinary.com/{cloud_name}/video/upload/ar_16000,ac_mono/{public_id}.wav"
+        # -----------------------------------------------------------
 
-        # 2. Tải file phiên bản .wav về tạm thời để AI xử lý
+        # 2. Tải file đã được chuyển đổi hoàn toàn về server
         temp_filename = "temp_audio_for_ai.wav"
-        urllib.request.urlretrieve(wav_audio_url, temp_filename) # Dùng URL đã chuyển đổi
+        urllib.request.urlretrieve(transformed_url, temp_filename)
 
-        # 3. Gọi model AI để xử lý file tạm (đã đúng định dạng .wav)
+        # 3. Gọi model AI
         ai_result = ai_model.predict(temp_filename)
 
-        # 4. Xóa file tạm sau khi xử lý xong
+        # 4. Xóa file tạm
         os.remove(temp_filename)
 
-        # 5. Lưu kết quả vào Database
+        # 5. Lưu vào database
         if current_user.is_authenticated and 'error' not in ai_result:
             new_prediction = Prediction(
                 user_id=current_user.id,
-                audio_url=original_audio_url, # <-- Lưu URL gốc để nghe lại
+                audio_url=upload_result['secure_url'],
                 result=ai_result.get('predicted_class', 'N/A'),
                 confidence=ai_result.get('confidence', '0%')
             )
             db.session.add(new_prediction)
             db.session.commit()
         
-        # 6. Trả kết quả về cho frontend
+        # 6. Trả kết quả về
         return jsonify({"success": True, "diagnosis_result": ai_result})
 
     except Exception as e:
