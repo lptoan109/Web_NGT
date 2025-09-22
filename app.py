@@ -267,7 +267,7 @@ def upload_audio():
         # Tạo URL mới yêu cầu chuyển đổi cả định dạng, tần số VÀ sang mono
         # ar_16000: audio_rate = 16000
         # ac_mono: audio_channel = mono
-        transformed_url = f"https://res.cloudinary.com/{CLOUDINARY_CLOUD_NAME}/video/upload/ar_16000,ac_mono/{public_id}.wav"
+        transformed_url = f"https://res.cloudinary.com/{cloud_name}/video/upload/ar_16000,ac_mono/{public_id}.wav"
         # -----------------------------------------------------------
 
         # 2. Tải file đã được chuyển đổi hoàn toàn về server
