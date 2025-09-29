@@ -9,10 +9,3 @@ Werkzeug
 gunicorn
 Flask-Mail
 Flask-Babel
-tensorflow
-soundfile
-numpy<2.0
-noisereduce
-psycopg2-binary
-cloudinary
-tensorflow-text
