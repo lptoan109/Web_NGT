@@ -1,0 +1,783 @@
+/* =============================================== */
+/* --- THIẾT LẬP CHUNG & RESET --- */
+/* =============================================== */
+
+/* --- Tải Font từ Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap');
+
+/* =============================================== */
+/* --- HỆ THỐNG THEME MÀU (16 THEMES) --- */
+/* =============================================== */
+
+/* Theme 1: Mặc định (Sáng) */
+:root {
+  --primary-color: #3B82F6; --primary-hover: #2563EB;
+  --secondary-color: #6B7280; --secondary-hover: #4B5563;
+  --danger-color: #EF4444; --danger-hover: #DC2626;
+  --success-color: #10B981;
+  --background-color: #F9FAFB;
+  --card-bg: #FFFFFF;
+  --border-color: #E5E7EB;
+  --text-dark: #111827;
+  --text-light: #6B7280;
+  --transition-speed: 0.3s;
+}
+
+/* Theme 2: Tối */
+[data-theme="dark"] {
+  --primary-color: #60A5FA; --primary-hover: #3B82F6;
+  --secondary-color: #4B5563; --secondary-hover: #374151;
+  --danger-color: #F87171; --danger-hover: #EF4444;
+  --success-color: #34D399;
+  --background-color: #111827; --card-bg: #1F2937;
+  --border-color: #374151; --text-dark: #F9FAFB; --text-light: #9CA3AF;
+}
+
+/* Theme 3: Xám Xanh */
+[data-theme="slate"] {
+  --primary-color: #818cf8; --primary-hover: #6366f1;
+  --secondary-color: #64748b; --secondary-hover: #475569;
+  --danger-color: #f87171; --danger-hover: #ef4444;
+  --success-color: #4ade80;
+  --background-color: #334155; --card-bg: #475569;
+  --border-color: #64748b; --text-dark: #e2e8f0; --text-light: #94a3b8;
+}
+
+/* Theme 4: Đại dương */
+[data-theme="ocean"] {
+  --primary-color: #0077b6; --primary-hover: #023e8a;
+  --secondary-color: #0a9396; --secondary-hover: #005f73;
+  --danger-color: #e63946; --danger-hover: #d62828;
+  --success-color: #52b788;
+  --background-color: #f0f9ff; --card-bg: #e0f2fe;
+  --border-color: #bae6fd; --text-dark: #03045e; --text-light: #0077b6;
+}
+
+/* Theme 5: Rừng Cây */
+[data-theme="forest"] {
+  --primary-color: #4ade80; --primary-hover: #22c55e;
+  --secondary-color: #15803d; --secondary-hover: #166534;
+  --danger-color: #f43f5e; --danger-hover: #e11d48;
+  --success-color: #4ade80;
+  --background-color: #f0fff4; --card-bg: #dcfce7;
+  --border-color: #bbf7d0; --text-dark: #14532d; --text-light: #15803d;
+}
+
+/* Theme 6: Hoa Hồng */
+[data-theme="rose"] {
+  --primary-color: #f43f5e; --primary-hover: #e11d48;
+  --secondary-color: #be123c; --secondary-hover: #9f1239;
+  --danger-color: #f43f5e; --danger-hover: #e11d48;
+  --success-color: #34d399;
+  --background-color: #fff1f2; --card-bg: #ffe4e6;
+  --border-color: #fecdd3; --text-dark: #881337; --text-light: #be123c;
+}
+
+/* Theme 7: Hoàng Hôn */
+[data-theme="sunset"] {
+  --primary-color: #f97316; --primary-hover: #ea580c;
+  --secondary-color: #9a3412; --secondary-hover: #7c2d12;
+  --danger-color: #ef4444; --danger-hover: #dc2626;
+  --success-color: #10b981;
+  --background-color: #fff7ed; --card-bg: #ffedd5;
+  --border-color: #fed7aa; --text-dark: #7c2d12; --text-light: #9a3412;
+}
+
+/* Theme 8: Oải Hương */
+[data-theme="lavender"] {
+  --primary-color: #8b5cf6; --primary-hover: #7c3aed;
+  --secondary-color: #6d28d9; --secondary-hover: #5b21b6;
+  --danger-color: #e11d48; --danger-hover: #be1239;
+  --success-color: #34d399;
+  --background-color: #f5f3ff; --card-bg: #ede9fe;
+  --border-color: #ddd6fe; --text-dark: #4c1d95; --text-light: #6d28d9;
+}
+
+/* Theme 9: Sa Thạch */
+[data-theme="sandstone"] {
+  --primary-color: #b45309; --primary-hover: #92400e;
+  --secondary-color: #92400e; --secondary-hover: #78350f;
+  --danger-color: #dc2626; --danger-hover: #b91c1c;
+  --success-color: #16a34a;
+  --background-color: #fdf6e3; --card-bg: #fef3c7;
+  --border-color: #fde68a; --text-dark: #78350f; --text-light: #92400e;
+}
+
+/* Theme 10: Bạc Hà */
+[data-theme="mint"] {
+  --primary-color: #2dd4bf; --primary-hover: #14b8a6;
+  --secondary-color: #0d9488; --secondary-hover: #0f766e;
+  --danger-color: #f43f5e; --danger-hover: #e11d48;
+  --success-color: #2dd4bf;
+  --background-color: #f0fdfa; --card-bg: #ccfbf1;
+  --border-color: #99f6e4; --text-dark: #047857; --text-light: #059669;
+}
+
+/* Theme 11: Ruby */
+[data-theme="ruby"] {
+  --primary-color: #dc2626; --primary-hover: #b91c1c;
+  --secondary-color: #991b1b; --secondary-hover: #7f1d1d;
+  --danger-color: #dc2626; --danger-hover: #b91c1c;
+  --success-color: #16a34a;
+  --background-color: #fef2f2; --card-bg: #fee2e2;
+  --border-color: #fecaca; --text-dark: #7f1d1d; --text-light: #991b1b;
+}
+
+/* THEME MỚI 1: Xanh Mòng Két */
+[data-theme="teal"] {
+  --primary-color: #14b8a6; --primary-hover: #0d9488;
+  --secondary-color: #0f766e; --secondary-hover: #134e4a;
+  --danger-color: #f43f5e; --danger-hover: #e11d48;
+  --success-color: #2dd4bf;
+  --background-color: #f0fdfa; --card-bg: #ccfbf1;
+  --border-color: #99f6e4; --text-dark: #134e4a; --text-light: #115e59;
+}
+
+/* THEME MỚI 2: Bầu Trời */
+[data-theme="sky"] {
+  --primary-color: #38bdf8; --primary-hover: #0ea5e9;
+  --secondary-color: #0284c7; --secondary-hover: #0369a1;
+  --danger-color: #fb7185; --danger-hover: #f43f5e;
+  --success-color: #4ade80;
+  --background-color: #f0f9ff; --card-bg: #e0f2fe;
+  --border-color: #bae6fd; --text-dark: #075985; --text-light: #0369a1;
+}
+
+/* THEME MỚI 3: Chàm */
+[data-theme="indigo"] {
+  --primary-color: #6366f1; --primary-hover: #4f46e5;
+  --secondary-color: #4338ca; --secondary-hover: #3730a3;
+  --danger-color: #f472b6; --danger-hover: #ec4899;
+  --success-color: #34d399;
+  --background-color: #eef2ff; --card-bg: #e0e7ff;
+  --border-color: #c7d2fe; --text-dark: #312e81; --text-light: #4338ca;
+}
+
+/* Theme 15: Cyberpunk */
+[data-theme="cyberpunk"] {
+  --primary-color: #db2777; --primary-hover: #be185d;
+  --secondary-color: #9333ea; --secondary-hover: #7e22ce;
+  --danger-color: #f43f5e; --danger-hover: #e11d48;
+  --success-color: #4ade80;
+  --background-color: #0d0221; --card-bg: #26174a;
+  --border-color: #5c2c88; --text-dark: #f0abfc; --text-light: #c084fc;
+}
+
+/* Theme 16: Đêm Khuya */
+[data-theme="midnight"] {
+  --primary-color: #67e8f9; --primary-hover: #22d3ee;
+  --secondary-color: #5eead4; --secondary-hover: #2dd4bf;
+  --danger-color: #fb7185; --danger-hover: #f43f5e;
+  --success-color: #86efac;
+  --background-color: #0c1445; --card-bg: #1e295a;
+  --border-color: #3b3a79; --text-dark: #e0f2fe; --text-light: #7dd3fc;
+}
+
+
+/* --- Reset và Thiết lập cơ bản --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--background-color);
+    color: var(--text-dark);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+h1, h2, h3, .nav-brand {
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+main {
+    padding: 20px;
+}
+
+/* =============================================== */
+/* --- CÁC THÀNH PHẦN CHUNG --- */
+/* =============================================== */
+
+/* --- THANH ĐIỀU HƯỚNG --- */
+.navbar-v2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg);
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.nav-brand {
+    font-size: 1.5em;
+    font-weight: 900;
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar-image-nav, .avatar-text {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+.avatar-text {
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.hamburger {
+    display: none;
+    font-size: 2em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dark);
+}
+
+/* --- Bộ chọn Theme --- */
+.theme-picker {
+    position: relative;
+    margin-right: 15px;
+}
+#theme-picker-toggle {
+    background: none;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+}
+#theme-picker-options {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+#theme-picker-options.hidden {
+    display: none;
+}
+.theme-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+}
+.theme-swatch:hover {
+    transform: scale(1.1);
+}
+
+/* --- CÁC LOẠI NÚT BẤM --- */
+.btn {
+    display: inline-block;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    text-align: center;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn-primary { background-color: var(--primary-color); }
+.btn-primary:hover { background-color: var(--primary-hover); }
+
+.btn-secondary { background-color: var(--secondary-color); color: white; }
+.btn-secondary:hover { background-color: var(--secondary-hover); }
+
+.btn-logout, .btn-delete {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+.btn-logout:hover, .btn-delete:hover { background-color: var(--danger-hover); }
+
+
+/* --- CÁC LOẠI BOX/CARD --- */
+.page-container, .history-container, .form-container, .diagnose-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: background-color var(--transition-speed) ease;
+}
+
+/* --- FORM --- */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+    font-family: var(--font-body);
+    background-color: var(--background-color);
+    color: var(--text-dark);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* style.css */
+
+.password-wrapper {
+    position: relative; /* Tạo một hệ quy chiếu cho icon */
+}
+
+.toggle-password-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+.toggle-password-icon:hover {
+    color: var(--text-dark);
+}
+/* --- THÔNG BÁO FLASH --- */
+.flash-messages {
+    max-width: 1200px;
+    margin: 20px auto 0 auto;
+    padding: 0 20px;
+}
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+}
+.alert-success { background-color: var(--success-color); }
+.alert-danger { background-color: var(--danger-color); }
+
+
+/* =============================================== */
+/* --- TRANG CHỦ (HERO SECTION) --- */
+/* =============================================== */
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
+    min-height: calc(100vh - 71px - 120px); /* Chiều cao màn hình trừ navbar và equalizer */
+    position: relative;
+    box-sizing: border-box;
+}
+.hero-content { 
+    max-width: 700px;
+}
+.hero-title {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+}
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+.hero-button {
+    font-size: 1rem;
+    padding: 16px 32px;
+    box-shadow: 0 0 20px color-mix(in srgb, var(--primary-color) 40%, transparent);
+}
+.hero-button:hover {
+    box-shadow: 0 0 30px color-mix(in srgb, var(--primary-color) 60%, transparent);
+}
+
+/* =============================================== */
+/* --- HIỆU ỨNG SÓNG EQUALIZER --- */
+/* =============================================== */
+#equalizer-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    height: 120px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.bar {
+    width: 10px;
+    margin: 0 2px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: linear-gradient(to top, #3B82F6, #8B5CF6);
+    transition: height 0.2s ease-out;
+}
+
+/* =============================================== */
+/* --- TRANG CHẨN ĐOÁN --- */
+/* =============================================== */
+
+.diagnose-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+.diagnose-header h2 { margin: 0; }
+.btn-history-link {
+    text-decoration: none;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+.diagnose-instructions {
+    color: var(--text-light);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.recorder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+.record-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary-color) 50%, transparent);
+}
+.record-btn.is-recording {
+    background-color: var(--danger-color);
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger-color) 70%, transparent); }
+    70% { box-shadow: 0 0 0 20px color-mix(in srgb, var(--danger-color) 0%, transparent); }
+    100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger-color) 0%, transparent); }
+}
+.timeline {
+    font-size: 1.5em;
+    font-family: var(--font-heading);
+    color: var(--text-light);
+}
+.results-content {
+    padding: 2rem 0;
+    text-align: center;
+    min-height: 200px;
+}
+
+/* =============================================== */
+/* --- GIAO DIỆN KẾT QUẢ CHẨN ĐOÁN --- */
+/* =============================================== */
+
+.result-display {
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.result-display.success {
+    background-color: color-mix(in srgb, var(--success-color) 10%, var(--card-bg));
+    border-color: var(--success-color);
+}
+.result-display.warning {
+    background-color: color-mix(in srgb, var(--danger-color) 10%, var(--card-bg));
+    border-color: var(--danger-color);
+}
+
+.result-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.result-icon .fa-check-circle { color: var(--success-color); }
+.result-icon .fa-exclamation-triangle { color: var(--danger-color); }
+
+.result-text-main {
+    font-size: 2.5rem;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    color: var(--primary-color);
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.result-text-sub {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* =============================================== */
+/* --- TRANG LỊCH SỬ --- */
+/* =============================================== */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+}
+.history-table th, .history-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.history-table thead th {
+    background-color: var(--background-color);
+    font-family: var(--font-heading);
+    color: var(--text-dark);
+    font-weight: 600;
+}
+.history-table tbody tr:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 5%, var(--card-bg));
+}
+.history-table audio {
+    width: 250px;
+    height: 40px;
+}
+
+/* =============================================== */
+/* --- TRANG PROFILE --- */
+/* =============================================== */
+.avatar-image-large, .avatar-text-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid var(--card-bg);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    object-fit: cover;
+}
+.avatar-text-large {
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4em;
+    font-weight: bold;
+}
+
+/* =============================================== */
+/* --- RESPONSIVE DESIGN --- */
+/* =============================================== */
+@media (max-width: 992px) {
+    .hamburger { display: block; }
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 71px; /* Cần khớp với chiều cao navbar */
+        left: 0;
+        width: 100%;
+        background-color: var(--card-bg);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem 0;
+        border-top: 1px solid var(--border-color);
+    }
+    .nav-menu.active { display: flex; }
+    .nav-links, .nav-auth {
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+    }
+    .nav-links a { padding: 1rem 2rem; }
+    .nav-auth {
+        padding: 1rem 2rem;
+        gap: 0.5rem;
+    }
+    .nav-auth .btn { width: 100%; }
+}
+
+@media (max-width: 768px) {
+    main { padding: 10px; }
+    .page-container, .history-container, .form-container, .diagnose-container {
+        margin: 20px 10px;
+        padding: 20px;
+    }
+    .hero-title { font-size: 2.25rem; }
+    .hero-subtitle { font-size: 1rem; }
+    
+    /* Responsive Table */
+    .history-table thead { display: none; }
+    .history-table, .history-table tbody, .history-table tr, .history-table td {
+        display: block;
+        width: 100%;
+    }
+    .history-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .history-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border-bottom: 1px dashed var(--border-color);
+    }
+    .history-table td:last-child { border-bottom: none; }
+    .history-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: calc(50% - 30px);
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .history-table audio { width: 100%; }
+}
+
+/* style.css */
+
+/* --- Tùy chỉnh cho Form Đăng Nhập --- */
+.forgot-password-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.9em;
+}
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-light);
+    margin: 25px 0;
+}
+.divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+.divider:not(:empty)::before {
+    margin-right: .25em;
+}
+.divider:not(:empty)::after {
+    margin-left: .25em;
+}
+
+.btn-google {
+    background-color: #4285F4;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.btn-google:hover {
+    background-color: #357ae8;
+}
+
+.form-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-light);
+}
+.form-switch a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+.form-switch a:hover {
+    text-decoration: underline;
+}

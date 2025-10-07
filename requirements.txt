@@ -1,0 +1,11 @@
+Flask
+Flask-Login
+Flask-SQLAlchemy
+Flask-Bcrypt
+SQLAlchemy
+authlib
+requests
+Werkzeug
+gunicorn
+Flask-Mail
+Flask-Babel

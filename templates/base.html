@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NGT{% endblock %}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <nav class="navbar-v2">
+            <a href="{{ url_for('homepage') }}" class="nav-brand">NGT</a>
+
+            <div class="nav-menu" id="nav-menu">
+                <div class="nav-links">
+                    <a href="{{ url_for('homepage') }}">Trang Chủ</a>
+                    <a href="{{ url_for('about') }}">Giới Thiệu</a>
+                    <a href="{{ url_for('diagnose') }}">Bắt Đầu Chẩn Đoán</a>
+                    <a href="{{ url_for('contact') }}">Liên Hệ & Báo Cáo Lỗi</a>
+                </div>
+            </div>
+
+            <div class="nav-auth">
+                <div class="theme-picker">
+                    <button id="theme-picker-toggle" title="Chọn giao diện">🎨</button>
+                    <div id="theme-picker-options" class="hidden">
+                        <button class="theme-swatch" data-theme-name="default" style="background-color: #F9FAFB;"></button>
+                        <button class="theme-swatch" data-theme-name="dark" style="background-color: #111827;"></button>
+                        <button class="theme-swatch" data-theme-name="slate" style="background-color: #334155;"></button>
+                        <button class="theme-swatch" data-theme-name="ocean" style="background-color: #f0f9ff;"></button>
+                        <button class="theme-swatch" data-theme-name="forest" style="background-color: #f0fff4;"></button>
+                        <button class="theme-swatch" data-theme-name="rose" style="background-color: #fff1f2;"></button>
+                        <button class="theme-swatch" data-theme-name="sunset" style="background-color: #fff7ed;"></button>
+                        <button class="theme-swatch" data-theme-name="lavender" style="background-color: #f5f3ff;"></button>
+                        <button class="theme-swatch" data-theme-name="sandstone" style="background-color: #fdf6e3;"></button>
+                        <button class="theme-swatch" data-theme-name="mint" style="background-color: #f0fdf4;"></button>
+                        <button class="theme-swatch" data-theme-name="ruby" style="background-color: #fef2f2;"></button>
+                        <button class="theme-swatch" data-theme-name="teal" style="background-color: #f0fdfa;"></button>
+                        <button class="theme-swatch" data-theme-name="sky" style="background-color: #f0f9ff;"></button>
+                        <button class="theme-swatch" data-theme-name="indigo" style="background-color: #eef2ff;"></button>
+                        <button class="theme-swatch" data-theme-name="cyberpunk" style="background-color: #0d0221;"></button>
+                        <button class="theme-swatch" data-theme-name="midnight" style="background-color: #0c1445;"></button>
+                    </div>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('profile') }}">
+                        {% if current_user.picture %}
+                            {# Dùng trực tiếp đường dẫn đã lưu trong database #}
+                            <img src="{{ current_user.picture }}" alt="User Avatar" class="avatar-image-nav">
+                        {% else %}
+                            {# Nếu không có ảnh, hiển thị chữ cái đầu #}
+                            <div class="avatar-text">{{ current_user.username[0]|upper }}</div>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-logout">Đăng Xuất</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Đăng Nhập</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-secondary">Đăng Ký</a>
+                {% endif %}
+            </div>
+
+            <button class="hamburger" id="hamburger">&#9776;</button>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% block equalizer %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

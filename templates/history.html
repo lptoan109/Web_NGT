@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Lịch Sử Chẩn Đoán - NGT Cough{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <div class="diagnose-header">
+        <h2>Lịch sử các bản ghi âm của bạn</h2>
+    </div>
+
+    {% if predictions %}
+        <div class="table-responsive">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Bản ghi âm</th>
+                        <th>Kết quả chẩn đoán</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prediction in predictions %}
+                    <tr>
+                        <td data-label="Thời gian">{{ prediction.timestamp.strftime('%d-%m-%Y %H:%M') }}</td>
+                        <td data-label="Bản ghi âm">
+                            <audio controls src="{{ url_for('static', filename='uploads/' + prediction.filename) }}"></audio>
+                        </td>
+                        <td data-label="Kết quả">{{ prediction.result }}</td>
+                        <td data-label="Hành động">
+                            <form action="{{ url_for('delete_prediction', prediction_id=prediction.id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bản ghi này?');">
+                                <button type="submit" class="btn btn-delete">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="text-align: center; margin-top: 30px; color: var(--text-light);">
+            Bạn chưa có bản ghi âm nào.
+        </p>
+    {% endif %}
+
+    {% if pagination and pagination.pages > 1 %}
+    <div class="pagination" style="text-align: center; margin-top: 30px;">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('history', page=pagination.prev_num) }}" class="btn btn-secondary">&laquo; Trang trước</a>
+        {% endif %}
+        {% if pagination.has_next %}
+            <a href="{{ url_for('history', page=pagination.next_num) }}" class="btn btn-secondary">Trang sau &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
